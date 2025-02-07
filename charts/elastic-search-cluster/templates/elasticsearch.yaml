@@ -9,7 +9,3 @@ spec:
     count: {{ .Values.elasticsearch.nodeCount }}
     config:
       node.store.allow_mmap: false
-  service:
-    type: {{ .Values.elasticsearch.service.type }}
-    port: {{ .Values.elasticsearch.service.port }}
-    nodePort: {{ .Values.elasticsearch.service.nodePort }}
