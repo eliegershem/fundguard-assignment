@@ -5,6 +5,10 @@ kind create cluster --name fundguard
 echo installing elastic-operator...
 helm install elastic-operator ./charts/eck-operator --namespace elastic-stack --create-namespace
 
+# install prometheus helm chart
+echo installing prometheus...
+helm install prometheus ./charts/prometheus --namespace monitoring --create-namespace
+
 # install elastic-search-cluster helm chart
 echo installing elastic-search-cluster...
 helm install elastic-search-cluster ./charts/elastic-search-cluster --namespace elastic-stack
