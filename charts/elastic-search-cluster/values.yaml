@@ -1,0 +1,3 @@
+elasticsearch:
+  version: "8.17.1"
+  nodeCount: 1
