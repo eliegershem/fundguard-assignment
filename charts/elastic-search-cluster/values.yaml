@@ -1,0 +1,7 @@
+elasticsearch:
+  version: "8.17.1"  # Specify the Elasticsearch version here
+  nodeCount: 1       # Specify the number of nodes here
+  service:
+    type: NodePort
+    port: 9200
+    nodePort: 30000
