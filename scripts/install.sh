@@ -4,8 +4,13 @@ set -x
 # cluster spinup
 kind create cluster --name fundguard
 
+# install istio helm charts
+helm install istio-base ./charts/istio-base -n istio-system --create-namespace
+helm install istiod ./charts/istiod -n istio-system
+
 # install es-oprator helm chart
 helm install elastic-operator ./charts/eck-operator -n elastic-stack --create-namespace
+kubectl label namespace elastic-system istio-injection=enabled
 
 # install kube-prometheus-stack helm chart
 helm install prometheus ./charts/kube-prometheus-stack -n monitoring --create-namespace
