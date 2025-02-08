@@ -4,5 +4,6 @@ es:
 serviceMonitor: # serviceMonitor configuration
   enabled: true
   namespace: "monitoring"
+  interval: 60s
   labels:
     release: prometheus

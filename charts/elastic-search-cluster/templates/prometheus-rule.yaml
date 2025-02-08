@@ -1,0 +1,54 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    app.kubernetes.io/component: prometheus
+    app.kubernetes.io/instance: k8s
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/part-of: kube-prometheus
+    app.kubernetes.io/version: 3.1.0
+    prometheus: k8s
+    role: alert-rules
+    release: prometheus
+  name: elasticsearch-rules
+  namespace: monitoring
+spec:
+  groups:
+  - name: elasticsearch-alerts
+    rules:
+    - alert: ElasticsearchHighCPUUsageInstance
+      annotations:
+        description: "CPU usage on Elasticsearch instance is above 80%"
+        summary: "High CPU usage on Elasticsearch instance"
+      expr: |
+        sum(rate(elasticsearch_process_cpu_seconds_total{cluster="elastic-search-cluster"}[5m])) by (instance) > 0.8
+      for: 5m
+      labels:
+        severity: critical
+    - alert: ElasticsearchHighMemoryUsageInstance
+      annotations:
+        description: "Memory usage on is above 80% of the limit."
+        summary: "High memory usage on Elasticsearch instance"
+      expr: |
+        (elasticsearch_breakers_estimated_size_bytes{breaker="parent", cluster="elastic-search-cluster"} / elasticsearch_breakers_limit_size_bytes{breaker="parent", cluster="elastic-search-cluster"}) > 0.8
+      for: 5m
+      labels:
+        severity: critical
+    - alert: ElasticsearchClusterHealth
+      annotations:
+        description: "Elasticsearch cluster health status is not green."
+        summary: "Elasticsearch cluster health is not green"
+      expr: |
+        elasticsearch_cluster_health_status{job="prometheus-elasticsearch-exporter", cluster="elastic-search-cluster", color="green"} != 1
+      for: 5m
+      labels:
+        severity: warning
+    - alert: ElasticsearchExporterDown
+      annotations:
+        description: "The prometheus-elasticsearch-exporter is down."
+        summary: "Elasticsearch exporter is down"
+      expr: |
+        up{job="prometheus-elasticsearch-exporter"} == 0
+      for: 5m
+      labels:
+        severity: critical
