@@ -10,7 +10,7 @@ metadata:
     prometheus: k8s
     role: alert-rules
     release: prometheus
-  name: elasticsearch-rules
+  name: {{ .Release.Name }}-rules
   namespace: monitoring
 spec:
   groups:
@@ -21,7 +21,7 @@ spec:
         description: "CPU usage on Elasticsearch instance is above 80%"
         summary: "High CPU usage on Elasticsearch instance"
       expr: |
-        sum(rate(elasticsearch_process_cpu_seconds_total{cluster="elastic-search-cluster"}[5m])) by (instance) > 0.8
+        sum(rate(elasticsearch_process_cpu_seconds_total{cluster="{{ .Release.Name }}"}[5m])) by (instance) > 0.8
       for: 5m
       labels:
         severity: critical
@@ -30,7 +30,7 @@ spec:
         description: "Memory usage on is above 80% of the limit."
         summary: "High memory usage on Elasticsearch instance"
       expr: |
-        (elasticsearch_breakers_estimated_size_bytes{breaker="parent", cluster="elastic-search-cluster"} / elasticsearch_breakers_limit_size_bytes{breaker="parent", cluster="elastic-search-cluster"}) > 0.8
+        (elasticsearch_breakers_estimated_size_bytes{breaker="parent", cluster="{{ .Release.Name }}"} / elasticsearch_breakers_limit_size_bytes{breaker="parent", cluster="{{ .Release.Name }}"}) > 0.8
       for: 5m
       labels:
         severity: critical
@@ -39,7 +39,7 @@ spec:
         description: "Elasticsearch cluster health status is not green."
         summary: "Elasticsearch cluster health is not green"
       expr: |
-        elasticsearch_cluster_health_status{job="prometheus-elasticsearch-exporter", cluster="elastic-search-cluster", color="green"} != 1
+        elasticsearch_cluster_health_status{job="prometheus-elasticsearch-exporter", cluster="{{ .Release.Name }}", color="green"} != 1
       for: 5m
       labels:
         severity: warning
