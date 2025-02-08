@@ -1,0 +1,8 @@
+envFromSecret: "elastic-search-cluster-es-elastic-user" # makes sure exporter uses es cluster password
+es:
+  uri: http://elastic:$(elastic)@elastic-search-cluster-es-http:9200 # es cluster url with password injection
+serviceMonitor: # serviceMonitor configuration
+  enabled: true
+  namespace: "monitoring"
+  labels:
+    release: prometheus

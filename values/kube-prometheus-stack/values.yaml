@@ -1,0 +1,50 @@
+prometheus:
+  prometheusSpec: # elastic-search serviceMonitor scrape configuration
+    serviceMonitorSelector: {}
+    serviceMonitorNamespaceSelector:
+      matchNames:
+        - monitoring
+grafana: # disables grafana installation
+  enabled: false
+
+# elastic-search custom alerts
+additionalPrometheusRulesMap:
+  elasticsearch-rules:
+    groups:
+      - name: elasticsearch-alerts
+        rules:
+          - alert: ElasticsearchHighCPUUsageInstance
+            expr: sum(rate(elasticsearch_process_cpu_seconds_total{cluster="elastic-search-cluster"}[5m])) by (instance) > 0.8
+            for: 1m
+            labels:
+              severity: critical
+            annotations:
+              summary: "High CPU usage on Elasticsearch instance {{ $labels.instance }}"
+              description: "CPU usage on {{ $labels.instance }} is above 80%.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+          - alert: ElasticsearchHighMemoryUsageInstance
+            expr: (elasticsearch_breakers_estimated_size_bytes{breaker="parent", cluster="elastic-search-cluster"} / elasticsearch_breakers_limit_size_bytes{breaker="parent", cluster="elastic-search-cluster"}) > 0.8
+            for: 1m
+            labels:
+              severity: critical
+            annotations:
+              summary: "High memory usage on Elasticsearch instance {{ $labels.instance }}"
+              description: "Memory usage on {{ $labels.instance }} is above 80% of the limit.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+          - alert: ElasticsearchClusterHealth
+            expr: elasticsearch_cluster_health_status{job="prometheus-elasticsearch-exporter", cluster="elastic-search-cluster", color="green"} != 1
+            for: 1m
+            labels:
+              severity: warning
+            annotations:
+              summary: "Elasticsearch cluster health is not green (instance {{ $labels.instance }})"
+              description: "Elasticsearch cluster health status for {{ $labels.instance }} is not green.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+          - alert: ElasticsearchExporterDown
+            expr: up{job="prometheus-elasticsearch-exporter"} == 0
+            for: 1m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Elasticsearch exporter is down (instance {{ $labels.instance }})"
+              description: "The prometheus-elasticsearch-exporter is down.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
