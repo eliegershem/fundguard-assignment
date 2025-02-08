@@ -1,6 +1,9 @@
-# fundguard-assigment
+# Fundguard Assignment
 
-This repository is for the Fundguard assignment. It creates a Kind cluster running Elasticsearch and adds Prometheus alerts.
+This repository is for the Fundguard assignment. It sets up a Kind cluster running Elasticsearch and integrates Prometheus for monitoring. 
+
+## Overview
+This project involves the installation of the Elasticsearch Operator, which simplifies the management of Elasticsearch clusters. It utilizes a custom Helm chart to deploy the cluster, along with the Elasticsearch Exporter that connects to the Elasticsearch cluster. Additionally, the project includes the installation of the kube-prometheus-stack, which automatically scrapes metrics from the exporter and provides custom alerts for monitoring.
 
 ## Requirements
 - Kind
